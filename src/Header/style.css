@@ -1,0 +1,19 @@
+.header {
+  height: 8vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  gap: 20px;
+  padding-top: 10px;
+  padding-left: 20px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.header img {
+  height: 100%;
+}
