@@ -4,7 +4,7 @@ import Header from '../Header';
 import Flashcards from '../Flashcards';
 
 export default function Content({display}){
-  let mostrar = [<Header />, <Flashcards />];
+  let mostrar = [<Header />, <Flashcards display={display} />];
   return (
     <div className="content">
       <img src={logo} />

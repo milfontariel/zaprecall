@@ -1,6 +1,7 @@
 import Header from '../Header';
 import Content from '../Initial';
 import Flashcards from '../Flashcards';
+import Result from '../Result.js';
 import './style.css';
 import { useState } from 'react';
 

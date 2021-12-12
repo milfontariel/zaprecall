@@ -1,8 +1,13 @@
 import { useState } from 'react/cjs/react.development';
 import Header from '../Header';
+import Content from '../Initial';
+import Result from '../Result.js';
 import './style.css';
+import React from 'react';
 
-export default function Flashcards(){
+let resultado = true;
+
+export default function Flashcards({display}){
   const [atual, setAtual] = useState(flashcards[0]);
   const indexAtual = {
     index: flashcards.indexOf(atual, [0]),
@@ -10,19 +15,19 @@ export default function Flashcards(){
   };
   return (
     <div className='container'>
-      <Flashcard card={atual} indexAtual={indexAtual} setAtual={setAtual} />
+      <Flashcard card={atual} indexAtual={indexAtual} setAtual={setAtual} display={display} />
     </div>
   )
 }
 
-function Flashcard({card, indexAtual, setAtual}){
+function Flashcard({card, indexAtual, setAtual, display}){
   const [border, setBorder] = useState('default');
   const [virada, setVirada] = useState(false);
   return(
     <div className={`flash-card ${border}`}>
       {!virada
         ? <FaceCard card={card} indexAtual={indexAtual} virada={virada} setAtual={setAtual} setVirada={setVirada}/>
-        : <BackCard card={card} indexAtual={indexAtual} setBorder={setBorder} virada={virada} setAtual={setAtual} setVirada={setVirada}/>
+        : <BackCard card={card} indexAtual={indexAtual} setBorder={setBorder} virada={virada} setAtual={setAtual} setVirada={setVirada} display={display}/>
       }
     </div>
   )
@@ -33,57 +38,75 @@ function FaceCard({card, indexAtual, setVirada}){
     <div className="frontface-card">
       <div className='index'>{indexAtual.index + 1}/{flashcards.length}</div>
       <h1>{card.Q}</h1>
-      <Flip setVirada={setVirada}/>
+      <FlipFace setVirada={setVirada} />
     </div>
   )
 }
 
-function Flip({virada, setAtual, setVirada}){
-  console.log('virada: ', virada);
-  console.log(setAtual);
 
-  function teste(){
-    setVirada(true);
-    setAtual(flashcards[1]);
-  }
+function FlipFace({setVirada}){  
   return (
     <div>
-      {virada 
-      ? <div className='flip' onClick={() => setVirada(false)}></div>
-      : <div className='flip' onClick={teste}></div>
-      }
+      <div className='flip' onClick={() => setVirada(true)}></div>
     </div>
   )
 }
 
-function BackCard({card, indexAtual, setAtual, setBorder, virada, setVirada}){
+function BackCard({card, indexAtual, setAtual, setBorder, setVirada, display}){
   const [concluido, setConcluido] = useState(false);
-  console.log(card === flashcards[0])
+  
+  function result(id){    
+    if(resultado && id){
+      resultado = true;
+    } else {
+      resultado = false;
+    }
+  }
+  
   return (
     <div className="backface-card">
       <span className='title'>{card.Q}</span>
       <div className='index'>{indexAtual.index + 1}/{flashcards.length}</div>
       <p className='reply'>{card.R}</p>
-      {concluido ? <Flip virada={virada} setAtual={setAtual} setVirada={setVirada}/> : <ul className='levels'><Levels setBorder={setBorder} setConcluido={setConcluido}/></ul>}
+
+      {concluido 
+      ? <FlipCard setAtual={setAtual} setVirada={setVirada} setBorder={setBorder} indexAtual={indexAtual} display={display} resultado={resultado}/>
+      : <ul className='levels'><Levels setBorder={setBorder} setConcluido={setConcluido} result={result}/></ul>}
+
     </div>
   )
 }
 
-function choose(setBorder, name, setConcluido){
-  setBorder(`border-${name}`);
-  setConcluido(true);
-}
+function FlipCard({setBorder, setAtual, setVirada, indexAtual, display, resultado}){
 
-function Levels({setBorder, setConcluido}){
   return (
-    levels.map(({name, text, id}) => {
-      return (
-        <li className={`level ${name}`} onClick={() => choose(setBorder, name, setConcluido)}>{text}</li>
-      )
-    })
+    <div className='flip' onClick={() => {
+      setVirada(false);
+      indexAtual.index < flashcards.length-1
+      ? setAtual(flashcards[indexAtual.index+1])
+      : display([<Result resultado={resultado} />]);
+      setBorder('default');
+    }}></div>
   )
 }
 
+function Levels({setBorder, setConcluido, result, setResult}){
+  function choose(name){
+    setBorder(`border-${name}`);
+    setConcluido(true);
+  }
+  return (
+    levels.map(({name, text, id}) => {
+      return (
+        <li className={`level ${name}`} onClick={() => {
+          choose(name, id);
+          result(id);
+        }}>{text}</li>
+        )
+      })
+      )
+    }
+    
 const levels = [
   {name: 'level1', text: 'Aprendi agora', id: true},
   {name: 'level2', text: 'Não lembrei', id: false},
