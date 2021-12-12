@@ -132,3 +132,7 @@ button,
 li {
   font-family: "Roboto", sans-serif;
 }
+
+body {
+  background-color: #fff;
+}
